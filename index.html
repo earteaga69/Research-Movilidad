@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Estudio Nacional de Movilidad y Delivery 2026 - COMPLETO FUNCIONAL</title>
-<!-- CDN removido para visor offline - estilos locales incluidos -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,300;9..144,1,300&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   body{font-family:'Inter',sans-serif;background:#09090b;color:white}
   .serif{font-family:'Fraunces',serif}
@@ -136,7 +137,7 @@ function renderPills(id){
  cont.innerHTML = opts[id].map(v=>`<button type="button" data-v="${v}" class="px-3 py-1.5 rounded-full border border-zinc-800 bg-zinc-900 text-[11px] text-zinc-400">${v}</button>`).join('');
  cont.querySelectorAll('button').forEach(b=>{b.onclick=()=>{b.classList.toggle('bg-[#FF6B00]'); b.classList.toggle('text-black'); b.classList.toggle('border-[#FF6B00]'); updatePreview();};});
 }
-function getPills(id){return Array.from(document.querySelectorAll('#'+id+' button')).filter(b=>b.classList.contains('bg-[#FF6B00]') || b.className.includes('#FF6B00')).map(b=>b.dataset.v);}
+function getPills(id){return Array.from(document.querySelectorAll('#'+id+' button.bg-\[\#FF6B00\]')).map(b=>b.dataset.v);}
 
 renderChecks('transportePrincipal',true);
 renderChecks('appPrincipal',true);
