@@ -24,6 +24,17 @@
     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF6B00]/10 border border-[#FF6B00]/20 text-[11px] tracking-widest uppercase font-semibold text-[#FF6B00]">Portfolio Demo • Parsons Method</div>
     <div id="folioBadge" class="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-[11px] font-mono">Folio: DEMO</div>
   </div>
+  
+  <!-- URL VINCULADA OK - CONFIGURADOR REMOVIDO PARA PRODUCCIÓN -->
+  <div class="hidden mt-4 p-3 rounded-xl bg-yellow-950/30 border border-yellow-800/50 text-[11px]">
+    <div class="text-yellow-200 font-semibold">🔧 CONFIGURACIÓN (solo esta vez):</div>
+    <div class="text-zinc-400 mt-1">Pega aquí tu URL /exec de Apps Script > Implementar > Copiar URL</div>
+    <div class="flex gap-2 mt-2">
+      <input id="webappUrlInput" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 bg-black border border-zinc-700 rounded-lg px-3 py-2 text-[11px] font-mono text-white">
+      <span id="urlStatus" class="text-[11px] px-2 py-2"></span>
+    </div>
+  </div>
+
   <h1 class="serif text-[36px] md:text-[48px] leading-[0.9]">Estudio Nacional<br><span class="italic text-zinc-400">de Movilidad y Delivery</span></h1>
   <p class="text-[13px] text-zinc-500 mt-3">Cuautitlán Izcalli / CDMX • 5 minutos • Datos para Sheets</p>
 
@@ -118,9 +129,25 @@
   </form>
 </div>
 
+
 <script>
+// CONFIGURADOR - Pega tu URL aquí o en la cajita de arriba
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwL-RUraEi9OAzlQ8PJvLLB-FysdwJKnHpuRwu-e00Tt1IL2v9dvyO4fRmFCkdU3DylzA/exec";
 const folio = 'MOV-'+new Date().getFullYear()+'-'+Math.random().toString(36).substr(2,4).toUpperCase();
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.getElementById('folioBadge').textContent='Folio: '+folio;
+  const urlInput = document.getElementById('webappUrlInput');
+  if(urlInput){
+    urlInput.value = WEB_APP_URL.startsWith('https') ? WEB_APP_URL : '';
+    urlInput.addEventListener('input', (e)=>{
+      WEB_APP_URL = e.target.value.trim();
+      localStorage.setItem('movilidad_webapp_url', WEB_APP_URL);
+      document.getElementById('urlStatus').textContent = WEB_APP_URL ? '✅ URL guardada' : '❌ Falta URL';
+    });
+    document.getElementById('urlStatus').textContent = WEB_APP_URL.startsWith('https') ? '✅ URL guardada' : '❌ Pega tu URL /exec arriba';
+  }
+});
+ 'MOV-'+new Date().getFullYear()+'-'+Math.random().toString(36).substr(2,4).toUpperCase();
 document.getElementById('folioBadge').textContent='Folio: '+folio;
 
 const opts = {
