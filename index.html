@@ -1,47 +1,240 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>DEBUG ENVIO</title><script src="https://cdn.tailwindcss.com"></script></head>
-<body class="bg-black text-white p-6 font-mono text-xs">
-<h1 class="text-lg font-bold mb-4">DEBUG - Prueba directa a tu Web App</h1>
-<p class="text-zinc-500 mb-4">URL: https://script.google.com/macros/s/AKfycbwL-RUraEi9OAzlQ8PJvLLB-FysdwJKnHpuRwu-e00Tt1IL2v9dvyO4fRmFCkdU3DylzA/exec</p>
-<div id="log" class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 h-[300px] overflow-auto"></div>
-<button id="b1" class="mt-4 px-6 py-3 bg-[#FF6B00] text-black rounded-full font-bold">1️⃣ Enviar payload MÍNIMO (debe llegar SI o SI)</button>
-<button id="b2" class="mt-4 ml-2 px-6 py-3 bg-white text-black rounded-full font-bold">2️⃣ Enviar payload COMPLETO con todas las preguntas</button>
-<div id="msg" class="hidden mt-4 p-4 rounded-xl"></div>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estudio Nacional de Movilidad y Delivery 2026 - COMPLETO FUNCIONAL</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,300;9..144,1,300&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Inter',sans-serif;background:#09090b;color:white}
+  .serif{font-family:'Fraunces',serif}
+  .card{border:1px solid #27272a;background:#18181b;border-radius:12px;transition:.2s;padding:12px}
+  .card.selected{border-color:#FF6B00;background:rgba(255,107,0,.08)}
+  .input{width:100%;background:#0a0a0a;border:1px solid #27272a;border-radius:12px;padding:12px 14px;font-size:13px;color:white;outline:none}
+  .input:focus{border-color:#FF6B00}
+</style>
+</head>
+<body>
+<div class="max-w-3xl mx-auto px-4 py-8">
+  <div class="flex justify-between items-center">
+    <div class="px-3 py-1 rounded-full bg-[#FF6B00]/10 border border-[#FF6B00]/20 text-[10px] tracking-widest uppercase font-bold text-[#FF6B00]">Estudio Nacional • Cuautitlán Izcalli / CDMX</div>
+    <div id="folioBadge" class="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-[11px] font-mono">Folio: -</div>
+  </div>
+  <h1 class="serif text-[36px] md:text-[44px] leading-[0.9] mt-4">Estudio Nacional<br><span class="italic text-zinc-400">de Movilidad y Delivery</span></h1>
+  <p class="text-[12px] text-zinc-500 mt-2">5 minutos • Datos para Sheets • Versión que SÍ funciona</p>
+  
+  <div class="flex gap-2 mt-6" id="progress"></div>
+
+  <form id="f" class="mt-6 space-y-6">
+    <!-- STEP 1 -->
+    <div class="s" data-s="1">
+      <h2 class="font-semibold">1. Perfil</h2>
+      <div class="grid grid-cols-2 gap-3 mt-3">
+        <input name="edad" required placeholder="Edad *" class="input">
+        <select name="genero" required class="input"><option value="">Género *</option><option>Femenino</option><option>Masculino</option><option>No binario</option></select>
+      </div>
+      <input name="municipio" required placeholder="Colonia / Municipio *" class="input mt-3" value="Cuautitlán Izcalli">
+      <div class="grid grid-cols-2 gap-3 mt-3">
+        <select name="ocupacion" required class="input"><option value="">Ocupación principal *</option><option>Estudiante</option><option>Empleado</option><option>Independiente</option><option>Hogar</option></select>
+        <select name="ingreso" required class="input"><option value="">Ingreso mensual (MXN) *</option><option>&lt; $8,000</option><option>$8,000 - $15,000</option><option>$15,000 - $25,000</option><option>&gt; $25,000</option></select>
+      </div>
+      <select name="autoPropio" required class="input mt-3"><option value="">¿Tienes auto propio? *</option><option>Sí</option><option>No</option></select>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="s hidden" data-s="2">
+      <h2 class="font-semibold">2. Movilidad</h2>
+      <label class="text-[11px] text-zinc-400 mt-3 block">¿Qué usas PRINCIPALMENTE para moverte? *</label>
+      <div class="grid grid-cols-2 gap-2 mt-2" id="transportePrincipal"></div>
+      <div class="grid grid-cols-2 gap-3 mt-3">
+        <select name="frecuenciaTaxi" required class="input"><option value="">Frecuencia semanal taxi app *</option><option>Diario</option><option>3-4 veces</option><option>1-2 veces</option><option>Quincenal</option></select>
+        <select name="gastoMovilidad" required class="input"><option value="">Gasto mensual movilidad *</option><option>&lt; $300</option><option>$300-$800</option><option>&gt; $800</option></select>
+      </div>
+      <select name="motivoMovilidad" required class="input mt-3"><option value="">Motivo principal para usar taxi app *</option><option>Trabajo</option><option>Escuela</option><option>Seguridad</option><option>Rapidez</option></select>
+      <label class="text-[11px] text-zinc-400 mt-3 block">¿Qué app de movilidad usas MÁS? *</label>
+      <div class="grid grid-cols-3 gap-2 mt-2" id="appPrincipal"></div>
+      <label class="text-[11px] text-zinc-400 mt-3 block">NPS 0-10 ¿Qué tanto recomendarías <span id="npsApp">esta app</span>? *</label>
+      <div class="grid grid-cols-11 gap-1 mt-2" id="nps"></div>
+      <label class="text-[11px] text-zinc-400 mt-3 block">¿Qué te FRUSTRA más de taxi app?</label>
+      <div class="flex flex-wrap gap-2 mt-2" id="frustraTaxi"></div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="s hidden" data-s="3">
+      <h2 class="font-semibold">3. Delivery</h2>
+      <label class="text-[11px] text-zinc-400 block">¿Usas estas apps de delivery? (multiselección) *</label>
+      <div class="grid grid-cols-2 gap-2 mt-2" id="appsDelivery"></div>
+      <div class="grid grid-cols-2 gap-3 mt-3">
+        <select name="frecuenciaDelivery" required class="input"><option value="">Frecuencia semanal delivery *</option><option>Diario</option><option>3-4 veces</option><option>1-2 veces</option><option>Nunca</option></select>
+        <select name="ticketPromedio" required class="input"><option value="">Ticket promedio *</option><option>&lt; $150</option><option>$150-$300</option><option>&gt; $300</option></select>
+      </div>
+      <label class="text-[11px] text-zinc-400 mt-3 block">¿Por qué pides delivery?</label>
+      <div class="flex flex-wrap gap-2 mt-2" id="motivoDelivery"></div>
+      <label class="text-[11px] text-zinc-400 mt-3 block">¿Qué pides más?</label>
+      <div class="flex flex-wrap gap-2 mt-2" id="quePides"></div>
+      <select name="queValoras" required class="input mt-3"><option value="">¿Qué valoras MÁS en delivery? *</option><option>Rapidez</option><option>Precio / Promos</option><option>Calidad</option></select>
+      <label class="text-[11px] text-zinc-400 mt-3 block">¿Qué te frustra de delivery?</label>
+      <div class="flex flex-wrap gap-2 mt-2" id="frustraDelivery"></div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="s hidden" data-s="4">
+      <h2 class="font-semibold">4. Experiencia</h2>
+      <select name="dejarAuto" required class="input mt-3"><option value="">¿Dejarías de usar tu auto si taxi app fuera 30% más barato y confiable? *</option><option>Sí, definitivamente</option><option>Quizá</option><option>No</option></select>
+      <textarea name="peorExperiencia" required placeholder="Cuéntanos tu peor experiencia con una app de movilidad o delivery *" rows="3" class="input mt-3"></textarea>
+      <textarea name="mejora" required placeholder="¿Qué mejora harías a estas apps para Cuautitlán Izcalli / CDMX? *" rows="3" class="input mt-3"></textarea>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="s hidden" data-s="5">
+      <h2 class="font-semibold">5. Cierre</h2>
+      <select name="entrevistas" required class="input mt-3"><option value="">¿Te interesaría participar en entrevistas pagadas de 20 min? *</option><option>Sí</option><option>No</option><option>Depende del pago</option></select>
+      <label class="flex gap-3 p-4 rounded-xl border border-zinc-800 bg-zinc-900 mt-3 cursor-pointer">
+        <input type="checkbox" name="consentimiento" required class="accent-[#FF6B00]"><span class="text-[12px] text-zinc-400">He leído y acepto el aviso de privacidad y que mis respuestas son para investigación de movilidad en Cuautitlán Izcalli.</span>
+      </label>
+      <div class="rounded-xl border border-dashed border-zinc-800 p-3 mt-3 text-[10px] font-mono text-zinc-500"><b class="text-zinc-300">Preview payload:</b><pre id="preview" class="whitespace-pre-wrap break-words mt-2"></pre></div>
+    </div>
+
+    <div class="flex justify-between pt-6 border-t border-zinc-900">
+      <button type="button" id="prev" class="hidden px-5 py-2.5 rounded-full border border-zinc-800 text-sm text-zinc-400">← Anterior</button>
+      <button type="button" id="next" class="ml-auto px-6 py-2.5 rounded-full bg-[#FF6B00] text-black text-sm font-bold">Siguiente →</button>
+      <button type="submit" id="submit" class="hidden ml-auto px-6 py-2.5 rounded-full bg-[#FF6B00] text-black text-sm font-bold">Enviar a Google Sheets</button>
+    </div>
+    <div id="msg" class="hidden mt-4 p-4 rounded-xl text-sm"></div>
+    <div id="diag" class="mt-4 p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-[10px] font-mono text-zinc-500"></div>
+  </form>
+</div>
 
 <script>
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwL-RUraEi9OAzlQ8PJvLLB-FysdwJKnHpuRwu-e00Tt1IL2v9dvyO4fRmFCkdU3DylzA/exec";
-function log(t){document.getElementById('log').innerHTML += '<div>['+new Date().toLocaleTimeString()+'] '+t+'</div>'; console.log(t);}
+const folio = 'MOV-'+new Date().getFullYear()+'-'+Math.random().toString(36).substr(2,4).toUpperCase();
+document.getElementById('folioBadge').textContent='Folio: '+folio;
 
-async function enviar(payload, nombre){
-  const msg=document.getElementById('msg');
-  msg.className='mt-4 p-4 rounded-xl bg-zinc-900 border'; msg.textContent='⏳ Enviando '+nombre+'...'; msg.classList.remove('hidden');
-  log('Enviando '+nombre+' folio:'+payload.folio);
-  try{
-    await fetch(WEB_APP_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload)});
-    log('✅ Fetch no-cors enviado - si no hubo error de red, Google lo recibió');
-    msg.className='mt-4 p-4 rounded-xl bg-green-950 border border-green-800 text-green-200';
-    msg.innerHTML='✅ '+nombre+' enviado (no-cors).<br>Folio: '+payload.folio+'<br><br>Ahora ve a tu Sheet Base_PRUEBA_Movilidad > Respuestas_Movilidad > Ctrl+R<br>Si no aparece, ve a Apps Script > Ejecuciones (icono reloj) y busca el último doPost - ahí dice el error exacto.';
-    // Verificar filas
-    setTimeout(async ()=>{
-      try{const r=await fetch(WEB_APP_URL); const j=await r.json(); log('Verificación GET: filas totales = '+j.rows);}catch(e){log('GET verificación falló: '+e.message);}
-    },2000);
-  }catch(e){
-    log('❌ ERROR fetch: '+e.message);
-    msg.className='mt-4 p-4 rounded-xl bg-red-950 border border-red-800 text-red-200';
-    msg.textContent='❌ Error: '+e.message;
-  }
+const opts = {
+ transportePrincipal:['Transporte público','Auto propio','Taxi app (Uber/DiDi)','Moto','Bicicleta','A pie','No hay transporte'],
+ appPrincipal:['Uber','DiDi','InDriver','Cabify','Ninguna'],
+ frustraTaxi:['Tarifa dinámica','Tarda en llegar','Cancela viaje','Ruta larga','Auto sucio','Inseguridad','App se traba'],
+ appsDelivery:['Rappi','Uber Eats','DiDi Food','Ninguna'],
+ motivoDelivery:['No quiero cocinar','No puedo salir','Antojo','Promoción','Trabajo / Junta'],
+ quePides:['Tacos / Comida mexicana','Pizza / Hamburguesas','Sushi / Asiática','Alitas / Boneless','Café / Postres','Super / Farmacia'],
+ frustraDelivery:['Tarda mucho','Llega frío','Costo envío alto','Pedido incompleto','Repartidor grosero','App se traba'],
+};
+
+function renderChecks(id, single){
+ const cont=document.getElementById(id); if(!cont) return;
+ cont.innerHTML = opts[id].map(v=>`<label class="card flex items-center gap-2 cursor-pointer text-[12px]"><input type="${single?'radio':'checkbox'}" name="${id}" value="${v}" class="accent-[#FF6B00]"> ${v}</label>`).join('');
+ cont.querySelectorAll('input').forEach(inp=>{
+   inp.addEventListener('change',()=>{
+     cont.querySelectorAll('label').forEach(l=>l.classList.remove('selected'));
+     cont.querySelectorAll('input:checked').forEach(c=>c.closest('label').classList.add('selected'));
+     if(id==='appPrincipal') document.getElementById('npsApp').textContent = inp.value || 'esta app';
+     updatePreview();
+   });
+ });
 }
+function renderPills(id){
+ const cont=document.getElementById(id);
+ cont.innerHTML = opts[id].map(v=>`<button type="button" data-v="${v}" class="px-3 py-1.5 rounded-full border border-zinc-800 bg-zinc-900 text-[11px] text-zinc-400">${v}</button>`).join('');
+ cont.querySelectorAll('button').forEach(b=>{b.onclick=()=>{b.classList.toggle('bg-[#FF6B00]'); b.classList.toggle('text-black'); b.classList.toggle('border-[#FF6B00]'); updatePreview();};});
+}
+function getPills(id){return Array.from(document.querySelectorAll('#'+id+' button.bg-\[\#FF6B00\]')).map(b=>b.dataset.v);}
 
-document.getElementById('b1').onclick=()=>{
-  const payload={"timestamp":new Date().toISOString(),"folio":"TEST-MIN-"+Math.random().toString(36).substr(2,4).toUpperCase(),"estudio":"Movilidad y Delivery 2026 - DEMO","edad":"25","genero":"Masculino","municipio":"Cuautitlán Izcalli","ocupacion":"Empleado","ingreso":"$8,000 - $15,000","autoPropio":"No","transportePrincipal":"Taxi app (Uber/DiDi)","frecuenciaTaxi":"Diario","motivoMovilidad":"Trabajo","gastoMovilidad":"< $300","appPrincipal":"Uber","nps":"9","appsDelivery":["Rappi"],"frecuenciaDelivery":"Diario","ticketPromedio":"< $150","motivoDelivery":["Antojo"],"quePides":["Pizza"],"queValoras":"Rapidez","frustraTaxi":["Tarifa dinámica"],"frustraDelivery":["Tarda mucho"],"dejarAuto":"Sí","peorExperiencia":"Prueba mínima","entrevistas":"Sí","mejora":"Prueba mínima mejora","consentimiento":"Sí"};
-  enviar(payload, "PAYLOAD MÍNIMO");
-};
+renderChecks('transportePrincipal',true);
+renderChecks('appPrincipal',true);
+renderChecks('appsDelivery',false);
+renderPills('frustraTaxi');
+renderPills('motivoDelivery');
+renderPills('quePides');
+renderPills('frustraDelivery');
 
-document.getElementById('b2').onclick=()=>{
-  const payload={"timestamp":new Date().toISOString(),"folio":"TEST-FULL-"+Math.random().toString(36).substr(2,4).toUpperCase(),"estudio":"Movilidad y Delivery 2026 - DEMO","edad":"28","genero":"Femenino","municipio":"Cuautitlán Izcalli Centro","ocupacion":"Estudiante","ingreso":"> $25,000","autoPropio":"Sí","transportePrincipal":"Transporte público","frecuenciaTaxi":"3-4 veces","motivoMovilidad":"Seguridad","gastoMovilidad":"$300-$800","appPrincipal":"DiDi","nps":"8","appsDelivery":["Rappi","Uber Eats"],"frecuenciaDelivery":"3-4 veces","ticketPromedio":"$150-$300","motivoDelivery":["No quiero cocinar","Antojo"],"quePides":["Tacos / Comida mexicana","Pizza / Hamburguesas"],"queValoras":"Precio / Promos","frustraTaxi":["Tarda en llegar","Cancela viaje"],"frustraDelivery":["Llega frío"],"dejarAuto":"Quizá","peorExperiencia":"El conductor canceló a mitad del camino y me cobró","entrevistas":"Depende del pago","mejora":"Que haya más cobertura en Izcalli y que no suban tanto la tarifa de noche","consentimiento":"Sí"};
-  enviar(payload, "PAYLOAD COMPLETO");
-};
+const npsCont=document.getElementById('nps');
+npsCont.innerHTML = Array.from({length:11},(_,i)=>`<button type="button" data-nps="${i}" class="h-10 rounded-xl border border-zinc-800 bg-zinc-900 text-[12px]">${i}</button>`).join('');
+let npsVal=null;
+npsCont.querySelectorAll('button').forEach(b=>b.onclick=()=>{npsCont.querySelectorAll('button').forEach(x=>x.className='h-10 rounded-xl border border-zinc-800 bg-zinc-900 text-[12px]'); b.className='h-10 rounded-xl border bg-[#FF6B00] text-black font-bold text-[12px]'; npsVal=b.dataset.nps; updatePreview();});
 
-log('Listo. Dale al botón 1 primero. Si ese llega, tu Web App está bien.');
+let cur=1; const total=5;
+function buildProgress(){document.getElementById('progress').innerHTML = Array.from({length:total},(_,i)=>`<div class="flex-1 h-1.5 rounded-full ${i+1<=cur?'bg-[#FF6B00]':'bg-zinc-800'}"></div>`).join('');}
+function show(n){cur=n; document.querySelectorAll('.s').forEach(s=>s.classList.add('hidden')); document.querySelector('[data-s="'+n+'"]').classList.remove('hidden'); document.getElementById('prev').classList.toggle('hidden', n===1); document.getElementById('next').classList.toggle('hidden', n===total); document.getElementById('submit').classList.toggle('hidden', n!==total); buildProgress(); window.scrollTo(0,0);}
+function validateStep(s){
+ const sec=document.querySelector('[data-s="'+s+'"]');
+ for(let el of sec.querySelectorAll('[required]')){ if(el.type==='checkbox' && !el.checked) return false; if(el.value.trim()==='') return false; }
+ if(s===2 && (!document.querySelector('input[name="transportePrincipal"]:checked') || !document.querySelector('input[name="appPrincipal"]:checked') || npsVal===null)) return false;
+ return true;
+}
+document.getElementById('next').onclick=()=>{if(!validateStep(cur)){alert('Completa los campos * de este paso'); return;} if(cur<total) show(cur+1);};
+document.getElementById('prev').onclick=()=>{if(cur>1) show(cur-1);};
+
+function getPayload(){
+ return {
+   timestamp: new Date().toISOString(),
+   folio: folio,
+   estudio: "Movilidad y Delivery 2026 - DEMO",
+   edad: document.querySelector('[name=edad]')?.value || '',
+   genero: document.querySelector('[name=genero]')?.value || '',
+   municipio: document.querySelector('[name=municipio]')?.value || '',
+   ocupacion: document.querySelector('[name=ocupacion]')?.value || '',
+   ingreso: document.querySelector('[name=ingreso]')?.value || '',
+   autoPropio: document.querySelector('[name=autoPropio]')?.value || '',
+   transportePrincipal: document.querySelector('input[name="transportePrincipal"]:checked')?.value || '',
+   frecuenciaTaxi: document.querySelector('[name=frecuenciaTaxi]')?.value || '',
+   motivoMovilidad: document.querySelector('[name=motivoMovilidad]')?.value || '',
+   gastoMovilidad: document.querySelector('[name=gastoMovilidad]')?.value || '',
+   appPrincipal: document.querySelector('input[name="appPrincipal"]:checked')?.value || '',
+   nps: npsVal || '',
+   appsDelivery: Array.from(document.querySelectorAll('input[name="appsDelivery"]:checked')).map(i=>i.value),
+   frecuenciaDelivery: document.querySelector('[name=frecuenciaDelivery]')?.value || '',
+   ticketPromedio: document.querySelector('[name=ticketPromedio]')?.value || '',
+   motivoDelivery: getPills('motivoDelivery'),
+   quePides: getPills('quePides'),
+   queValoras: document.querySelector('[name=queValoras]')?.value || '',
+   frustraTaxi: getPills('frustraTaxi'),
+   frustraDelivery: getPills('frustraDelivery'),
+   dejarAuto: document.querySelector('[name=dejarAuto]')?.value || '',
+   peorExperiencia: document.querySelector('[name=peorExperiencia]')?.value || '',
+   entrevistas: document.querySelector('[name=entrevistas]')?.value || '',
+   mejora: document.querySelector('[name=mejora]')?.value || '',
+   consentimiento: document.querySelector('[name=consentimiento]')?.checked ? 'Sí' : ''
+ };
+}
+function updatePreview(){const p=getPayload(); document.getElementById('preview').textContent = JSON.stringify({folio:p.folio, municipio:p.municipio, transportePrincipal:p.transportePrincipal, appPrincipal:p.appPrincipal, nps:p.nps, appsDelivery:p.appsDelivery, quePides:p.quePides, dejarAuto:p.dejarAuto}, null, 2);}
+document.addEventListener('input', updatePreview); document.addEventListener('change', updatePreview);
+
+function logDiag(t){const d=document.getElementById('diag'); if(d) d.innerHTML += '<div>'+new Date().toLocaleTimeString()+': '+t+'</div>';}
+
+// ESTA ES LA LOGICA EXACTA DEL QUE SI TE FUNCIONO (FIX v3)
+document.getElementById('f').addEventListener('submit', async (e)=>{
+ e.preventDefault();
+ if(!validateStep(5)){alert('Falta consentimiento o campo'); return;}
+ const payload = getPayload();
+ const msg = document.getElementById('msg');
+ const btn = document.getElementById('submit');
+ btn.textContent='Enviando...'; btn.disabled=true;
+ msg.className='mt-4 p-4 rounded-xl text-sm bg-zinc-900 border border-zinc-700 text-zinc-300';
+ msg.textContent='⏳ Enviando a Google Sheets...';
+ msg.classList.remove('hidden');
+ logDiag('Enviando folio: '+payload.folio);
+
+ try{
+   await fetch(WEB_APP_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload)});
+   logDiag('Fetch POST enviado (no-cors) - OK');
+   msg.className='mt-4 p-4 rounded-xl text-sm bg-green-950 border border-green-800 text-green-200 leading-6';
+   msg.innerHTML = '✅ <b>¡Respuestas registradas!</b><br>Folio <span class="font-mono bg-green-900 px-2 py-0.5 rounded">'+folio+'</span> guardado en Google Sheets.<br><br>Ve a tu Sheet <b>Base_PRUEBA_Movilidad</b> > pestaña <b>Respuestas_Movilidad</b> y presiona <b>Ctrl+R</b>. Debe aparecer la fila nueva.<br><br><span class="text-[11px] text-green-300/70">Método: text/plain sin preflight - igual que la versión corta que te funcionó.</span>';
+   msg.classList.remove('hidden');
+   // Verificación con GET
+   setTimeout(async ()=>{
+     try{const r=await fetch(WEB_APP_URL); const j=await r.json(); logDiag('Verificación: filas='+j.rows); if(j.rows>1) msg.innerHTML+='<br><br>✔️ Verificado: Sheet tiene '+j.rows+' filas';}catch{}
+   }, 1500);
+ }catch(err){
+   logDiag('POST ERROR: '+err.message);
+   msg.className='mt-4 p-4 rounded-xl text-sm bg-red-950 border border-red-800 text-red-200';
+   msg.textContent='❌ Error: '+err.message;
+   msg.classList.remove('hidden');
+ }finally{
+   btn.textContent='Enviar a Google Sheets'; btn.disabled=false;
+ }
+});
+
+buildProgress(); show(1); updatePreview(); logDiag('Formulario completo cargado - listo');
 </script>
-</body></html>
+</body>
+</html>
